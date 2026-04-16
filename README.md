@@ -9,7 +9,7 @@ A lightweight, single-file C utility for probabilistic language detection.
 - **Zero-Match Protection**: Discards languages with no matching n-grams to avoid false positives.
 
 ## Supported Languages
-`en`, `es`, `pt`, `fr`, `it`, `de`, `nl`, `sv`, `da`, `no`, `pl`, `tr`, `id`, `ro`, `cs`, `hu`, `fi`, `ru`, `uk`, `bg`, `el`, `ar`, `he`, `hi`, `ja`.
+`en`, `es`, `pt`, `fr`, `it`, `de`, `nl`, `sv`, `da`, `no`, `pl`, `tr`, `id`, `ro`, `cs`, `hu`, `fi`, `ru`, `uk`, `bg`, `el`, `ar`, `he`, `hi`, `ja`, `ko`.
 
 ## Usage
 
@@ -44,5 +44,14 @@ Standard C99. No dependencies.
 gcc -O2 prol.c -o prol -lm
 ```
 
-## License
-KaisarCode Standard license.
+---
+
+**Author:** KaisarCode
+
+**Email:** <kaisar@kaisarcode.com>
+
+**Website:** [https://kaisarcode.com](https://kaisarcode.com)
+
+**License:** [GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
+
+© 2026 KaisarCode
