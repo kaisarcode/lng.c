@@ -1,6 +1,6 @@
 /**
- * prol - Probable language detector (v0.6.2)
- * 100% parity with kc-tpm algorithm. Integrated 25-language pack.
+ * prol - Probable language detector (v0.6.3)
+ * Lightweight, single-file utility for n-gram based language detection.
  */
 
 #define _POSIX_C_SOURCE 200809L
@@ -11,7 +11,7 @@
 #include <ctype.h>
 #include <unistd.h>
 
-#define PROL_VERSION "0.6.2"
+#define PROL_VERSION "0.6.3"
 #define PROL_NG_SIZE 3
 #define PROL_MAX_GRAMS 2048
 #define PROL_MAX_LANGS 32
@@ -22,7 +22,7 @@ typedef struct { const char *c; const char *s; KcG p[PROL_MAX_GRAMS]; int p_sz; 
 static KcL ds[PROL_MAX_LANGS] = {
     {"en", "the and are for that with this have from they which would there their about which into through across because between world hello morning everyone project matches short text quick brown fox jumps over lazy dog."},
     {"es", "que el la de en que lo los un una por para como al su sus con del por sobre entre mucho después también siempre mundo hola buenos días todos ¿cómo estás? este proyecto compara texto corto el zorro marrón."},
-    {"pt", "que o a do da de em um uma para com por mais se os as ao das dos pelo pela seu sua como entre muito depois mundo olá bom dia todos este projeto compara texto curto rápido raposa marrom salta sobre cão."},
+    {"pt", "que o a do da de em um uma para com por mais se os as ao das dos pelo pela seu sua como entre muito depois mundo olá bom dia todos este projeto compara texto corto rápido raposa marrom salta sobre cão."},
     {"fr", "le la les de des un une et est dans que qui pour pas plus ce sur avec au par se sont nous vous son sa ses monde bonjour tous ce projet compare texte court le renard brun saute par dessus chien paresseux."},
     {"it", "il la lo i le gli un una e di che in per con si sono ma come nel della delle questo quello non piu mondo ciao buongiorno tutti questo progetto confronta testo corto la volpe marrone salta sopra cane pigro."},
     {"de", "der die das und ein eine am im in zu von mit für auf den dem nicht ist auch sich als nach vor bei durch welt hallo guten morgen alle dieses projekt vergleicht kurzen text der schnelle braune fuchs."},

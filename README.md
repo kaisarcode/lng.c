@@ -1,12 +1,11 @@
 # prol - Probable Language Detector
 
-A lightweight, single-file C utility for probabilistic language detection. Based on the **kc-tpm** (KaisarCode Text Profile Matcher) algorithm.
+A lightweight, single-file C utility for probabilistic language detection.
 
 ## Features
 - **Integrated Engine**: No external maps required. Supports 25 languages out of the box.
 - **N-Gram Probabilities**: Uses 3-character N-gram sliding windows for high accuracy.
 - **UTF-8 Aware**: Correctly handles accent marks and non-Latin charsets (Cyrillic, Greek, Hindi, etc.).
-- **KC-TPM Parity**: Follows the exact log-likelihood sigmoid scoring used in KaisarCode projects.
 - **Zero-Match Protection**: Discards languages with no matching n-grams to avoid false positives.
 
 ## Supported Languages
