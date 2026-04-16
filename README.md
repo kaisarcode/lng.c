@@ -63,6 +63,10 @@ const char *kc_prol_detect(const char *text);
 | `it` | Italian |
 | `nl` | Dutch |
 | `sv` | Swedish |
+| `da` | Danish |
+| `no` | Norwegian |
+| `pl` | Polish |
+| `tr` | Turkish |
 
 ---
 
