@@ -1,6 +1,6 @@
 /**
- * prol - Probable language detector (v0.4.1)
- * 100% logic alignment with kc-tpm. Curated multilingual dataset.
+ * prol - Probable language detector (v0.5.0)
+ * 100% logic alignment with kc-tpm. Support for UTF-8 (Cyrillic, Greek, etc).
  */
 
 #define _POSIX_C_SOURCE 200809L
@@ -11,7 +11,7 @@
 #include <ctype.h>
 #include <unistd.h>
 
-#define PROL_VERSION "0.4.1"
+#define PROL_VERSION "0.5.0"
 #define PROL_NG_SIZE 3
 #define PROL_MAX_LANGS 32
 #define PROL_MAX_PROF 2048
@@ -20,24 +20,15 @@ typedef struct { char g[12]; int n; } KcG;
 typedef struct { const char *c; const char *s; KcG p[PROL_MAX_PROF]; int p_sz; long tot; } KcL;
 
 static KcL ds[PROL_MAX_LANGS] = {
-    {"en", "the and are for that with this have from they which would there their about which into through across because between world hello morning everyone project matches short text quick brown fox jumps over lazy dog. what is your name? this is a test and it should work perfectly well for most english texts. documentation is the most important part of any software project because it explains how things work."},
-    {"es", "que el la de en que lo los un una por para como al su sus con del por sobre entre mucho después también siempre mundo hola buenos días todos ¿cómo estás? este proyecto compara texto corto el zorro marrón salta sobre perro perezoso. nuestra patria es grande y hermosa. la documentación es la parte más importante de cualquier proyecto de software porque explica cómo funcionan las cosas."},
-    {"pt", "que o a do da de em um uma para com por mais se os as ao das dos pelo pela seu sua como entre muito depois mundo olá bom dia todos este projeto compara texto curto rápido raposa marrom salta sobre cão preguiçoso. a língua portuguesa é muito bonita e rica em história. você está bem hoje? a documentação é essencial para o sucesso de qualquer projeto de engenharia de software."},
-    {"fr", "le la les de des un une et est dans que qui pour pas plus ce sur avec au par se sont nous vous son sa ses monde bonjour tous ce projet compare texte court le renard brun saute par dessus chien paresseux. comment allez-vous aujourd'hui? la documentation est la partie la plus importante de tout projet car elle explique comment les choses fonctionnent vraiment dans le système."},
-    {"it", "il la lo i le gli un una e di che in per con si sono ma come nel della delle questo quello non piu mondo ciao buongiorno tutti questo progetto confronta testo corto la volpe marrone salta sopra cane pigro. come stai? il sole splende oggi. la documentazione è la chiave per il successo di ogni progetto software, poiché spiega in dettaglio come funziona l'intero sistema integrato."},
-    {"de", "der die das und ein eine am im in zu von mit für auf den dem nicht ist auch sich als nach vor bei durch welt hallo guten morgen alle dieses projekt vergleicht kurzen text der schnelle braune fuchs springt über faulen hund. wie geht es ihnen heute? diese software ist wirklich großartig. dokumentation ist wichtig für jedes projekt, damit andere verstehen können wie alles funktioniert."},
-    {"nl", "de het een en in is op met voor als aan door naar om over uit bij voor zijn was maar niet uit over door overal. hoe gaat het vandaag? deze software is zeer krachtig en lichtgewicht. documentatie is heel belangrijk voor elk project omdat het uitlegt hoe alles werkt in de praktijk."},
-    {"sv", "och i som att en ett med för på av till den de gör om har han hon det vid från skulle kunna vara alla. hur mår du idag? den snabba bruna räven hoppar över den lata hunden. dokumentation är nyckeln till framgång för alla programvaruprojekt eftersom den förklarar hur systemet fungerar."},
-    {"da", "og i det at en til af for med på de som vi er han har ikke ved om fra men de da over efter her. hvordan har du det? denne software er fantastisk og meget hurtig. dokumentation er vigtig for ethvert projekt, da det forklarer hvordan tingene fungerer."},
-    {"no", "og i det at en til av for med på de som vi er han har ikke ved om fra men de da over etter her. hvordan har du det i dag? dette prosjektet er veldig bra. dokumentasjon er viktig for alle prosjekter fordi det forklarer hvordan systemet fungerer."},
-    {"pl", "w i na do że z o na za przy od po do by się jako który nie ale tak jak dla nich. jak się masz? cześć wszystkim. dokumentacja jest bardzo ważna dla każdego projektu, ponieważ wyjaśnia, jak wszystko działa w praktyce. czerwony lis skacze nad leniwym psem."},
-    {"tr", "ve bir bu da de için çok ama en daha her kadar gibi olan olanlar ancak değil mi için mi bu ne o zaman. nasılsın? merhaba arkadaşlar. bu yazılım gerçekten harika. dokümantasyon her proje için önemlidir çünkü her şeyin nasıl çalıştığını açıklar."},
-    {"id", "dan yang di ke untuk ada adalah dengan dan itu ini saya kamu dia mereka kami kita dapat dalam dari pada. apa kabar hari ini? proyek ini sangat bagus. dokumentasi sangat penting untuk setiap proyek karena menjelaskan bagaimana semuanya bekerja."},
-    {"ro", "și în o de la care pe un pentru că să se a fi cu din s-au fost mai au prin pre ea el ei. ce mai faci astăzi? acest proiect este foarte bun. documentația este esențială pentru succesul oricărui proiect, deoarece explică modul în care funcționează totul."},
-    {"cs", "a že v na s do za pro k s o po u by jako který on ona oni ono jak se mi tebe. jak se máš? toto je velmi zajímavý projekt. dokumentace je důležitá pro každý projekt, protože vysvětluje, jak vše funguje."},
-    {"hu", "a az és egy hogy van volt lesz neki nem ő de mint is ha már csak még el ki le be fel át. hogy vagy ma? ez egy nagyon jó projekt. a dokumentáció fontos minden projekt számára, mert elmagyarázza, hogyan működik minden."},
-    {"fi", "ja se on että hänet hän he heidän meidän teidän olla oli on se että ei mutta niitä. mitä kuuluu? tämä on hyvä hanke. dokumentointi on erittäin tärkeää jokaiselle projektille, koska se selittää, miten kaikki toimii."},
-    {NULL, NULL, {{""}}, 0, 0}
+    {"en", "the and are for that with this have from they which would there their about which into through across because between world hello morning everyone project matches short text quick brown fox jumps over lazy dog. what is your name? this is a test and it should work perfectly well for most english texts."},
+    {"es", "que el la de en que lo los un una por para como al su sus con del por sobre entre mucho después también siempre mundo hola buenos días todos ¿cómo estás? este proyecto compara texto corto el zorro marrón salta sobre perro perezoso. nuestra patria es grande."},
+    {"pt", "que o a do da de em um uma para com por mais se os as ao das dos pelo pela seu sua como entre muito depois mundo olá bom dia todos este projeto compara texto curto rápido raposa marrom salta sobre cão preguiçoso. a língua portuguesa é bonita."},
+    {"fr", "le la les de des un une et est dans que qui pour pas plus ce sur avec au par se sont nous vous son sa ses monde bonjour tous ce projet compare texte court le renard brun saute par dessus chien paresseux. comment allez-vous aujourd'hui?"},
+    {"it", "il la lo i le gli un una e di che in per con si sono ma come nel della delle questo quello non piu mondo ciao buongiorno tutti questo progetto confronta testo corto la volpe marrone salta sopra cane pigro. come stai? il sole splende."},
+    {"de", "der die das und ein eine am im in zu von mit für auf den dem nicht ist auch sich als nach vor bei durch welt hallo guten morgen alle dieses projekt vergleicht kurzen text der schnelle braune fuchs springt über faulen hund. wie geht es ihnen?"},
+    {"ru", "и в во не на я что тот быть с а весь по он она они это как но так за из о от около привет как дела? доброе утро всем. этот проект сравнивает короткий текст с использованием профилей n-грамм. это легко и быстро. документация важна."},
+    {"el", "και το να είναι στο με για του ότι δεν θα από με τα οι που την ο στην από. γεια σας τι κάνετε; καλημέρα σε όλους. αυτό το έργο συγκρίνει σύντομο κείμενο χρησιμοποιώντας προφίλ n-gram. είναι ελαφρύ και γρήγορο. η τεκμηρίωση είναι σημαντική."},
+    {NULL, NULL, {{""}, 0}, 0, 0}
 };
 
 static int u8_len(unsigned char c) {
@@ -48,16 +39,39 @@ static int u8_len(unsigned char c) {
     return 1;
 }
 
+/* Basic UTF-8 lowercase for ASCII, Cyrillic and Greek */
+static void u8_low(unsigned char *c1, unsigned char *c2) {
+    if (*c1 == 0xD0 && (*c2 >= 0x90 && *c2 <= 0xAF)) *c2 += 0x20; /* Cyrillic A-П */
+    else if (*c1 == 0xD0 && (*c2 >= 0xB0 && *c2 <= 0xBF)) ; /* Already low */
+    else if (*c1 == 0xD1 && (*c2 >= 0x80 && *c2 <= 0x8F)) ; /* Already low */
+    else if (*c1 == 0xCE && (*c2 >= 0x91 && *c2 <= 0xAB)) *c2 += 0x20; /* Greek Alpha-Omega */
+}
+
 static char* norm(const char *in) {
     if (!in) return NULL;
     size_t len = strlen(in);
     char *out = malloc(len + 1);
     if (!out) return NULL;
     size_t j = 0; int in_s = 1;
-    for (size_t i = 0; i < len; i++) {
-        unsigned char c = (unsigned char)in[i];
-        if (isspace(c)) { if (!in_s) { out[j++] = ' '; in_s = 1; } }
-        else { if (c >= 'A' && c <= 'Z') out[j++] = (char)(c + 32); else out[j++] = (char)c; in_s = 0; }
+    for (size_t i = 0; i < len; ) {
+        unsigned char c1 = (unsigned char)in[i];
+        int cl = u8_len(c1);
+        if (cl == 1 && isspace(c1)) {
+            if (!in_s) { out[j++] = ' '; in_s = 1; }
+            i++;
+        } else {
+            if (cl == 1) {
+                if (c1 >= 'A' && c1 <= 'Z') out[j++] = (char)(c1 + 32);
+                else out[j++] = (char)c1;
+            } else if (cl == 2) {
+                unsigned char c2 = (unsigned char)in[i+1];
+                u8_low(&c1, &c2);
+                out[j++] = (char)c1; out[j++] = (char)c2;
+            } else {
+                for (int k = 0; k < cl; k++) out[j++] = in[i+k];
+            }
+            in_s = 0; i += cl;
+        }
     }
     if (j > 0 && out[j-1] == ' ') j--;
     out[j] = '\0';
