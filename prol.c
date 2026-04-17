@@ -55,6 +55,8 @@ static kc_prol_lang_t kc_prol_ds[PROL_MAX_LANGS] = {
 
 /**
  * Returns the length in bytes of the next UTF-8 character.
+ * @param c Leading byte to inspect.
+ * @return Number of bytes in the next UTF-8 character.
  */
 static int kc_prol_u8_len(unsigned char c) {
     if (c < 0x80) return 1;
@@ -66,6 +68,9 @@ static int kc_prol_u8_len(unsigned char c) {
 
 /**
  * Performs a basic UTF-8 case folding for common upstairs scripts.
+ * @param c1 First byte of the UTF-8 sequence.
+ * @param c2 Second byte of the UTF-8 sequence.
+ * @return No return value.
  */
 static void kc_prol_u8_low(unsigned char *c1, unsigned char *c2) {
     if (*c1 == 0xD0 && (*c2 >= 0x90 && *c2 <= 0xAF)) *c2 += 0x20;
@@ -74,6 +79,7 @@ static void kc_prol_u8_low(unsigned char *c1, unsigned char *c2) {
 
 /**
  * Normalizes input text following kcs policy (collapsing space, lowercase).
+ * @param in Input text to normalize.
  * @return Allocated string that must be freed by caller.
  */
 static char* kc_prol_norm(const char *in) {
@@ -109,6 +115,8 @@ static char* kc_prol_norm(const char *in) {
 
 /**
  * Generates an N-gram profile from a language seed string.
+ * @param l Language profile to populate.
+ * @return No return value.
  */
 static void kc_prol_train(kc_prol_lang_t *l) {
     if (l->p_sz > 0) return;
@@ -135,6 +143,8 @@ static void kc_prol_train(kc_prol_lang_t *l) {
 
 /**
  * Calculates log-likelihood score for a text against a language profile.
+ * @param txt Input text to evaluate.
+ * @param l Language profile used for scoring.
  * @return Normalized probability between 0 and 1.
  */
 static double kc_prol_calculate(const char *txt, kc_prol_lang_t *l) {
@@ -166,6 +176,9 @@ typedef struct { const char *c; double s; } kc_prol_res_t;
 
 /**
  * Comparison function for sorting results by score.
+ * @param a Left result pointer.
+ * @param b Right result pointer.
+ * @return Positive, negative, or zero based on score ordering.
  */
 static int kc_prol_cmp(const void *a, const void *b) {
     if (((kc_prol_res_t*)b)->s > ((kc_prol_res_t*)a)->s) return 1;
@@ -174,6 +187,9 @@ static int kc_prol_cmp(const void *a, const void *b) {
 
 /**
  * Standalone entry point.
+ * @param argc Number of command-line arguments.
+ * @param argv Command-line argument vector.
+ * @return Process exit status.
  */
 int main(int argc, char **argv) {
     double th = 0.001; int lim = 1; const char *txt = NULL; char buf[8192];
