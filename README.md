@@ -1,127 +1,73 @@
-# prol
+# prol - Probable Language Detector
 
-Probable language detector in C.
+`prol` is a small C library and CLI for probabilistic language detection using embedded 3-gram profiles.
 
-## Summary
+## What It Does
 
-`prol` is a language detector implemented in C.
+For an input text, `prol`:
 
-The project is split into two parts:
+1. normalizes the text with UTF-8 aware handling
+2. scores it against embedded language profiles
+3. ranks the most probable matches
+4. returns either the best match or the top candidates
 
-- `libprol`: reusable detection library
-- `prol`: thin command-line interface over `libprol`
-
-## Features
-
-- Embedded language dataset
-- 3-gram profile matching
-- UTF-8 aware normalization
-- No external runtime dependencies
-- Small public C API
-- CLI built on top of the library
-
-## Project Layout
-
-```text
-prol.h
-libprol.c
-prol.c
-```
-
-- `prol.h`: public API
-- `libprol.c`: detection engine
-- `prol.c`: CLI wrapper
+This extracts the language detection primitive into a reusable C library.
 
 ## Public API
 
-```c
-typedef struct {
-    const char *code;
-    double score;
-} prol_result_t;
+The library is exposed through [prol.h](./prol.h).
 
-const char *prol_detect(const char *text);
+Core types:
 
-int prol_detect_top(
-    const char *text,
-    prol_result_t *out,
-    int max_results,
-    double threshold
-);
-```
+- `prol_result_t`
 
-## API Notes
+Core functions:
 
-- `prol_detect` returns the best detected language code
-- `prol_detect_top` writes ranked results into `out`
-- results are ordered by descending score
-- `threshold` filters weak matches
-- the return value is the number of results written
+- `prol_init()`
+- `prol_detect()`
+- `prol_detect_top()`
+
+`prol_detect_top()` writes ranked results into a caller-provided buffer and returns the number of entries written.
 
 ## CLI Usage
 
-### Detect one language
+```bash
+prol [options] [text]
+```
+
+Options:
+
+- `--threshold`, `-t <n>`
+- `--limit`, `-l <n>`
+- `--help`, `-h`
+- `--version`, `-v`
+
+Examples:
 
 ```bash
 prol "¿Cómo estás?"
-```
-
-Expected output:
-
-```text
-es
-```
-
-### Return top results
-
-```bash
 prol -l 3 "Hello world"
-```
-
-### Filter by threshold
-
-```bash
 prol -t 0.5 "Cześć!"
+printf 'Bom dia' | prol
 ```
-
-### Read from standard input
-
-```bash
-echo "Bom dia" | prol
-```
-
-## CLI Options
-
-- `-l <n>`: maximum number of results to print
-- `-t <f>`: minimum score threshold
-
-Default values:
-
-- result limit: `1`
-- threshold: `0.001`
 
 ## Build
-
-### Build library and CLI
 
 ```bash
 gcc -std=c99 -O3 libprol.c prol.c -I. -lm -o prol
 ```
 
-### Build static library only
-
-```bash
-gcc -std=c99 -O3 -c libprol.c -I.
-ar rcs libprol.a libprol.o
-```
-
-## Integration Example
+## Library Example
 
 ```c
 #include "prol.h"
 
 int main(void) {
     const char *lang;
+
+    if (prol_init() != 0) {
+        return 1;
+    }
 
     lang = prol_detect("Bonjour tout le monde");
     return lang ? 0 : 1;
@@ -156,13 +102,6 @@ int main(void) {
 - Hindi (`hi`)
 - Japanese (`ja`)
 - Korean (`ko`)
-
-## Implementation Notes
-
-- Embedded dataset
-- Lazy profile training
-- Internal global state
-- Not thread-safe
 
 ---
 
