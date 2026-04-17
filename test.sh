@@ -5,6 +5,21 @@
 # Website: https://kaisarcode.com
 # License: https://www.gnu.org/licenses/gpl-3.0.html
 
+# Prints one failure line using the shared KCS color style.
+# @param 1 Failure message.
+# @return 1 on failure.
+kc_test_fail() {
+    printf "\033[31m[FAIL]\033[0m %s\n" "$1"
+    return 1
+}
+
+# Prints one success line using the shared KCS color style.
+# @param 1 Success message.
+# @return 0 on success.
+kc_test_pass() {
+    printf "\033[32m[PASS]\033[0m %s\n" "$1"
+}
+
 # Check if the prol binary exists
 # @return 0 if exists, 1 otherwise
 kc_test_check_binary() {
@@ -27,10 +42,10 @@ kc_test_run_case() {
     result=$(echo "$text" | ./prol)
     
     if [ "$result" = "$expected" ]; then
-        echo "[PASS] [$expected] '$text'"
+        kc_test_pass "[$expected] '$text'"
         return 0
     else
-        echo "[FAIL] [$expected] '$text' -> Got '$result'"
+        kc_test_fail "[$expected] '$text' -> Got '$result'"
         return 1
     fi
 }
