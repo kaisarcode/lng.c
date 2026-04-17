@@ -54,9 +54,22 @@ When `--limit` is greater than `1`, it prints `code: score` lines.
 
 ## Build
 
+POSIX:
+
 ```bash
-gcc -std=c99 -O3 libprol.c prol.c -I. -lm -pthread -o prol
+cc -std=c99 -O3 libprol.c prol.c -I. -lm -pthread -o prol
 ```
+
+Windows:
+
+```bash
+cl /std:c11 /O2 libprol.c prol.c /I.
+```
+
+The source uses platform conditionals for one-time initialization:
+
+- Windows uses `InitOnceExecuteOnce()`
+- POSIX systems use `pthread_once()`
 
 ## Library Example
 

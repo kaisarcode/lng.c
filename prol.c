@@ -6,7 +6,9 @@
  * License: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
+#ifndef _WIN32
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include "prol.h"
 

@@ -27,7 +27,7 @@ typedef struct {
 /**
  * Initializes internal language profiles.
  * @param none No parameters.
- * @return 0 on success, or a non-zero pthread_once error code on failure.
+ * @return 0 on success, or a non-zero initialization error code on failure.
  */
 int prol_init(void);
 

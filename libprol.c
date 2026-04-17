@@ -6,15 +6,22 @@
  * License: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
+#ifndef _WIN32
 #define _POSIX_C_SOURCE 200809L
+#endif
 
 #include "prol.h"
 
 #include <ctype.h>
 #include <math.h>
-#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
 
 #define PROL_NG_SIZE 3
 #define PROL_MAX_GRAMS 2048
@@ -83,7 +90,11 @@ static prol_lang_t prol_langs[PROL_MAX_LANGS] = {
     }
 };
 
+#ifdef _WIN32
+static INIT_ONCE prol_once = INIT_ONCE_STATIC_INIT;
+#else
 static pthread_once_t prol_once = PTHREAD_ONCE_INIT;
+#endif
 
 /**
  * Determines the byte length of a UTF-8 sequence from its lead byte.
@@ -391,12 +402,40 @@ static void prol_init_once(void) {
     }
 }
 
+#ifdef _WIN32
+/**
+ * Windows one-time init trampoline.
+ * @param once One-time initialization object.
+ * @param param Unused callback parameter.
+ * @param context Unused callback context.
+ * @return TRUE on success.
+ */
+static BOOL CALLBACK prol_init_once_win(
+    PINIT_ONCE once,
+    PVOID param,
+    PVOID *context
+) {
+    (void)once;
+    (void)param;
+    (void)context;
+    prol_init_once();
+    return TRUE;
+}
+#endif
+
 /**
  * Initializes internal library state.
- * @return 0 on success, or a non-zero pthread_once error code on failure.
+ * @return 0 on success, or a non-zero initialization error code on failure.
  */
 int prol_init(void) {
+#ifdef _WIN32
+    if (InitOnceExecuteOnce(&prol_once, prol_init_once_win, NULL, NULL)) {
+        return 0;
+    }
+    return (int)GetLastError();
+#else
     return pthread_once(&prol_once, prol_init_once);
+#endif
 }
 
 /**
