@@ -66,10 +66,8 @@ Windows:
 cl /std:c11 /O2 libprol.c prol.c /I.
 ```
 
-The source uses platform conditionals for one-time initialization:
-
-- Windows uses `InitOnceExecuteOnce()`
-- POSIX systems use `pthread_once()`
+The source code is written to stay portable across Windows, macOS, iOS,
+Linux, and Android. Final compiler flags and output names depend on the toolchain.
 
 ## Library Example
 
