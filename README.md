@@ -1,6 +1,6 @@
 # prol.c - Specialized Text Processing Library
 
-A minimalist C library for specialized text processing and sequence handling. Part of the KaisarCode high-performance text processing suite.
+A minimalist C library for specialized text processing and sequence handling.
 
 ---
 
