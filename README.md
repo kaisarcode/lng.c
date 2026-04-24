@@ -62,16 +62,18 @@ int count = prol_detect_top("Some text to detect", results, 5, 0.01);
 ## Build Options
 
 - `PROL_NATIVE`: Set to `ON` to enable `-march=native` optimizations (default: `OFF`).
-  ```bash
-  cmake -B build -DPROL_NATIVE=ON
-  ```
+    ```bash
+    cmake -B build -DPROL_NATIVE=ON
+    ```
 
 ---
 
 **Author:** KaisarCode
 
-**Website:** https://kaisarcode.com
+**Email:** <kaisar@kaisarcode.com>
 
-**License:** https://www.gnu.org/licenses/gpl-3.0.html
+**Website:** [https://kaisarcode.com](https://kaisarcode.com)
+
+**License:** [GNU GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.html)
 
 © 2026 KaisarCode
