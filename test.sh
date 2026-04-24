@@ -24,7 +24,6 @@ kc_test_pass() {
 # @return 0 if exists, 1 otherwise
 kc_test_check_binary() {
     if [ ! -f "./prol" ]; then
-        echo "[ERROR] prol binary not found. Please compile first."
         return 1
     fi
     return 0
@@ -57,9 +56,6 @@ kc_test_main() {
     
     kc_test_check_binary || exit 1
     
-    echo "Starting full prol validation suite (26 languages)..."
-    echo "----------------------------------------------------"
-    
     kc_test_run_case "Hello world" "en" || failed=$((failed + 1))
     kc_test_run_case "Guten Morgen" "de" || failed=$((failed + 1))
     kc_test_run_case "Hoe gaat het?" "nl" || failed=$((failed + 1))
@@ -87,12 +83,9 @@ kc_test_main() {
     kc_test_run_case "こんにちは" "ja" || failed=$((failed + 1))
     kc_test_run_case "안녕하세요" "ko" || failed=$((failed + 1))
     
-    echo "----------------------------------------------------"
     if [ "$failed" -eq 0 ]; then
-        echo "[SUCCESS] All 26 tests passed!"
         return 0
     else
-        echo "[FAILURE] $failed tests failed."
         return 1
     fi
 }
