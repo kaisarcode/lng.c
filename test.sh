@@ -1,6 +1,6 @@
 #!/bin/bash
 # test.sh
-# Summary: Exhaustive validation suite for prol supporting all 26 languages.
+# Summary: Exhaustive validation suite for lng supporting all 26 languages.
 # Author:  KaisarCode
 # Website: https://kaisarcode.com
 # License: https://www.gnu.org/licenses/gpl-3.0.html
@@ -20,10 +20,10 @@ kc_test_pass() {
     printf "\033[32m[PASS]\033[0m %s\n" "$1"
 }
 
-# Check if the prol binary exists
+# Check if the lng binary exists
 # @return 0 if exists, 1 otherwise
 kc_test_check_binary() {
-    if [ ! -f "./prol" ]; then
+    if [ ! -f "./lng" ]; then
         return 1
     fi
     return 0
@@ -37,9 +37,9 @@ kc_test_run_case() {
     local text="$1"
     local expected="$2"
     local result
-    
-    result=$(echo "$text" | ./prol)
-    
+
+    result=$(echo "$text" | ./lng)
+
     if [ "$result" = "$expected" ]; then
         kc_test_pass "[$expected] '$text'"
         return 0
@@ -53,9 +53,9 @@ kc_test_run_case() {
 # @return 0 if all tests pass, 1 otherwise
 kc_test_main() {
     local failed=0
-    
+
     kc_test_check_binary || exit 1
-    
+
     kc_test_run_case "Hello world" "en" || failed=$((failed + 1))
     kc_test_run_case "Guten Morgen" "de" || failed=$((failed + 1))
     kc_test_run_case "Hoe gaat het?" "nl" || failed=$((failed + 1))
@@ -82,7 +82,7 @@ kc_test_main() {
     kc_test_run_case "नमस्ते" "hi" || failed=$((failed + 1))
     kc_test_run_case "こんにちは" "ja" || failed=$((failed + 1))
     kc_test_run_case "안녕하세요" "ko" || failed=$((failed + 1))
-    
+
     if [ "$failed" -eq 0 ]; then
         return 0
     else

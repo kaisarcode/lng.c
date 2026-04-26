@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(prol C)
+project(lng C)
 
 set(CMAKE_C_STANDARD 11)
 
@@ -7,13 +7,13 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 # Performance optimizations
-option(PROL_NATIVE "Enable native optimizations" OFF)
+option(LNG_NATIVE "Enable native optimizations" OFF)
 
 if(NOT MSVC)
     add_compile_options(-O3 -fno-finite-math-only)
     add_definitions(-D_GNU_SOURCE)
-    
-    if(PROL_NATIVE)
+
+    if(LNG_NATIVE)
         add_compile_options(-march=native)
     endif()
 else()
@@ -21,15 +21,15 @@ else()
 endif()
 
 # Main executable
-add_executable(prol 
-    prol.c 
-    libprol.c
+add_executable(lng
+    lng.c
+    liblng.c
 )
 
 # Include directories
-target_include_directories(prol PRIVATE .)
+target_include_directories(lng PRIVATE .)
 
 # System libraries
 if(UNIX)
-    target_link_libraries(prol pthread m)
+    target_link_libraries(lng pthread m)
 endif()

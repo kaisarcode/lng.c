@@ -1,6 +1,6 @@
-# prol - Probabilistic Language Detector
+# lng - Language Detector
 
-`prol` is a high-performance, minimalist probabilistic language detector based on UTF-8 n-gram profiles. It identifies languages by comparing the frequency distribution of n-grams in the input text against pre-computed profiles for dozens of supported languages.
+`lng` is a high-performance, minimalist language detector based on UTF-8 n-gram profiles. It identifies languages by comparing the frequency distribution of n-grams in the input text against pre-computed profiles for dozens of supported languages.
 
 ---
 
@@ -12,11 +12,11 @@ Requires a C compiler and CMake 3.14+.
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
-*The `prol` binary will be generated directly in the root directory.*
+*The `lng` binary will be generated directly in the root directory.*
 
 ### CLI Usage
 ```bash
-prol [options] [text]
+lng [options] [text]
 ```
 
 **Options:**
@@ -27,8 +27,8 @@ prol [options] [text]
 
 **Examples:**
 ```bash
-prol "This is an English sentence."
-printf 'Este es un texto en español' | prol -t 0.1
+lng "This is an English sentence."
+printf 'Este es un texto en español' | lng -t 0.1
 ```
 
 ---
@@ -38,32 +38,32 @@ printf 'Este es un texto en español' | prol -t 0.1
 The library provides a simple, thread-safe API for language detection.
 
 ```c
-#include "prol.h"
+#include "lng.h"
 
 // 1. Initialize profiles (Optional, called internally by detection functions)
-prol_init();
+lng_init();
 
 // 2. Detect best match
-const char *lang = prol_detect("Hello world");
+const char *lang = lng_detect("Hello world");
 
 // 3. Detect top N matches
-prol_result_t results[5];
-int count = prol_detect_top("Some text to detect", results, 5, 0.01);
+lng_result_t results[5];
+int count = lng_detect_top("Some text to detect", results, 5, 0.01);
 ```
 
 ### Thread-Safety & Performance
-- `prol_init()` is idempotent and thread-safe.
-- `prol_detect()` and `prol_detect_top()` call `prol_init()` internally if it hasn't been initialized yet.
+- `lng_init()` is idempotent and thread-safe.
+- `lng_detect()` and `lng_detect_top()` call `lng_init()` internally if it hasn't been initialized yet.
 - After initialization, detection uses read-only language profiles, making it safe for concurrent use.
-- **Note:** Caller-provided output buffers (like `prol_result_t` arrays) must not be shared unsafely between threads.
+- **Note:** Caller-provided output buffers (like `lng_result_t` arrays) must not be shared unsafely between threads.
 
 ---
 
 ## Build Options
 
-- `PROL_NATIVE`: Set to `ON` to enable `-march=native` optimizations (default: `OFF`).
+- `LNG_NATIVE`: Set to `ON` to enable `-march=native` optimizations (default: `OFF`).
     ```bash
-    cmake -B build -DPROL_NATIVE=ON
+    cmake -B build -DLNG_NATIVE=ON
     ```
 
 ---
