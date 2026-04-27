@@ -1,60 +1,60 @@
 #!/bin/bash
 # test.sh
-# Summary: Exhaustive validation suite for lng supporting all 26 languages.
+# Summary: Validation suite for lng covering all 26 supported languages.
 # Author:  KaisarCode
 # Website: https://kaisarcode.com
 # License: https://www.gnu.org/licenses/gpl-3.0.html
 
-# Prints one failure line using the shared KCS color style.
+# Prints one failure line.
 # @param 1 Failure message.
 # @return 1 on failure.
 kc_test_fail() {
-    printf "\033[31m[FAIL]\033[0m %s\n" "$1"
+    printf '\033[31m[FAIL]\033[0m %s\n' "$1"
     return 1
 }
 
-# Prints one success line using the shared KCS color style.
+# Prints one success line.
 # @param 1 Success message.
 # @return 0 on success.
 kc_test_pass() {
-    printf "\033[32m[PASS]\033[0m %s\n" "$1"
+    printf '\033[32m[PASS]\033[0m %s\n' "$1"
 }
 
-# Check if the lng binary exists
-# @return 0 if exists, 1 otherwise
+# Verifies the binary exists and is executable.
+# @return 0 on success, 1 on failure.
 kc_test_check_binary() {
-    if [ ! -f "./lng" ]; then
+    if [ ! -x "./bin/x86_64/linux/lng" ]; then
         return 1
     fi
     return 0
 }
 
-# Run a single detection test
-# @param 1 text to detect
-# @param 2 expected language code
-# @return 0 on success, 1 on failure
+# Runs a single detection test.
+# @param 1 Text to detect.
+# @param 2 Expected language code.
+# @return 0 on success, 1 on failure.
 kc_test_run_case() {
     local text="$1"
     local expected="$2"
     local result
 
-    result=$(echo "$text" | ./lng)
+    result=$(printf '%s' "$text" | "$BIN")
 
     if [ "$result" = "$expected" ]; then
         kc_test_pass "[$expected] '$text'"
         return 0
-    else
-        kc_test_fail "[$expected] '$text' -> Got '$result'"
-        return 1
     fi
+    kc_test_fail "[$expected] '$text' -> got '$result'"
 }
 
-# Run the complete test suite for all 26 languages
-# @return 0 if all tests pass, 1 otherwise
+# Runs the complete validation suite for all 26 languages.
+# @return 0 on success, 1 on failure.
 kc_test_main() {
     local failed=0
 
     kc_test_check_binary || exit 1
+
+    BIN="./bin/x86_64/linux/lng"
 
     kc_test_run_case "Hello world" "en" || failed=$((failed + 1))
     kc_test_run_case "Guten Morgen" "de" || failed=$((failed + 1))
@@ -85,9 +85,9 @@ kc_test_main() {
 
     if [ "$failed" -eq 0 ]; then
         return 0
-    else
-        return 1
     fi
+
+    return 1
 }
 
 kc_test_main

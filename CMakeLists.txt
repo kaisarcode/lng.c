@@ -3,16 +3,11 @@ project(lng C)
 
 set(CMAKE_C_STANDARD 11)
 
-# Output binary to the root directory
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
-
-# Performance optimizations
-option(LNG_NATIVE "Enable native optimizations" OFF)
+option(LNG_NATIVE "Enable native CPU optimizations" OFF)
 
 if(NOT MSVC)
     add_compile_options(-O3 -fno-finite-math-only)
     add_definitions(-D_GNU_SOURCE)
-
     if(LNG_NATIVE)
         add_compile_options(-march=native)
     endif()
@@ -20,16 +15,35 @@ else()
     add_compile_options(/O2)
 endif()
 
-# Main executable
-add_executable(lng
-    lng.c
-    liblng.c
-)
+set(LNG_SOURCES src/liblng.c)
+set(LNG_HEADERS src/lng.h)
 
-# Include directories
-target_include_directories(lng PRIVATE .)
+add_library(lng_shared SHARED ${LNG_SOURCES})
+set_target_properties(lng_shared PROPERTIES OUTPUT_NAME lng PREFIX "lib")
+target_include_directories(lng_shared PRIVATE src)
 
-# System libraries
-if(UNIX)
-    target_link_libraries(lng pthread m)
+add_library(lng_static STATIC ${LNG_SOURCES})
+set_target_properties(lng_static PROPERTIES OUTPUT_NAME lng PREFIX "lib")
+target_include_directories(lng_static PRIVATE src)
+
+add_executable(lng_exe src/lng.c ${LNG_SOURCES})
+set_target_properties(lng_exe PROPERTIES OUTPUT_NAME lng)
+target_include_directories(lng_exe PRIVATE src)
+
+if(UNIX AND NOT ANDROID)
+    target_link_libraries(lng_shared pthread m)
+    target_link_libraries(lng_static pthread m)
+    target_link_libraries(lng_exe pthread m)
+elseif(ANDROID)
+    target_link_libraries(lng_shared m)
+    target_link_libraries(lng_static m)
+    target_link_libraries(lng_exe m)
+endif()
+
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|armv7)")
+    if(NOT ANDROID)
+        target_link_libraries(lng_shared atomic)
+        target_link_libraries(lng_static atomic)
+        target_link_libraries(lng_exe atomic)
+    endif()
 endif()
