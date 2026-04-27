@@ -45,7 +45,6 @@ define linux_target
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_SYSTEM_NAME=Linux \
 		-DCMAKE_C_COMPILER=$(2) \
-		-DCMAKE_CXX_COMPILER=$(3) \
 		-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$(CURDIR)/$(BUILD_DIR)/$(subst /,-,$(1))-linux/out \
 		-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=$(CURDIR)/$(BIN_DIR)/$(1)/linux \
 		-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$(CURDIR)/$(BIN_DIR)/$(1)/linux \
@@ -56,40 +55,40 @@ define linux_target
 endef
 
 x86_64/linux:
-	$(call linux_target,x86_64,gcc,g++)
+	$(call linux_target,x86_64,gcc)
 
 i686/linux:
-	$(call linux_target,i686,i686-linux-gnu-gcc,i686-linux-gnu-g++)
+	$(call linux_target,i686,i686-linux-gnu-gcc)
 
 aarch64/linux:
-	$(call linux_target,aarch64,aarch64-linux-gnu-gcc,aarch64-linux-gnu-g++)
+	$(call linux_target,aarch64,aarch64-linux-gnu-gcc)
 
 armv7hf/linux:
-	$(call linux_target,armv7hf,arm-linux-gnueabihf-gcc,arm-linux-gnueabihf-g++)
+	$(call linux_target,armv7hf,arm-linux-gnueabihf-gcc)
 
 armv7/linux:
-	$(call linux_target,armv7,arm-linux-gnueabi-gcc,arm-linux-gnueabi-g++)
+	$(call linux_target,armv7,arm-linux-gnueabi-gcc)
 
 riscv64/linux:
-	$(call linux_target,riscv64,riscv64-linux-gnu-gcc,riscv64-linux-gnu-g++)
+	$(call linux_target,riscv64,riscv64-linux-gnu-gcc)
 
 powerpc64le/linux:
-	$(call linux_target,powerpc64le,powerpc64le-linux-gnu-gcc,powerpc64le-linux-gnu-g++)
+	$(call linux_target,powerpc64le,powerpc64le-linux-gnu-gcc)
 
 mips/linux:
-	$(call linux_target,mips,mips-linux-gnu-gcc,mips-linux-gnu-g++)
+	$(call linux_target,mips,mips-linux-gnu-gcc)
 
 mipsel/linux:
-	$(call linux_target,mipsel,mipsel-linux-gnu-gcc,mipsel-linux-gnu-g++)
+	$(call linux_target,mipsel,mipsel-linux-gnu-gcc)
 
 mips64el/linux:
-	$(call linux_target,mips64el,mips64el-linux-gnuabi64-gcc,mips64el-linux-gnuabi64-g++)
+	$(call linux_target,mips64el,mips64el-linux-gnuabi64-gcc)
 
 s390x/linux:
-	$(call linux_target,s390x,s390x-linux-gnu-gcc,s390x-linux-gnu-g++)
+	$(call linux_target,s390x,s390x-linux-gnu-gcc)
 
 loongarch64/linux:
-	$(call linux_target,loongarch64,loongarch64-linux-gnu-gcc,loongarch64-linux-gnu-g++)
+	$(call linux_target,loongarch64,loongarch64-linux-gnu-gcc)
 
 ## ── Windows ──────────────────────────────────────────────────────────────────
 
@@ -99,7 +98,6 @@ define windows_target
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_SYSTEM_NAME=Windows \
 		-DCMAKE_C_COMPILER=$(2) \
-		-DCMAKE_CXX_COMPILER=$(3) \
 		-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$(CURDIR)/$(BUILD_DIR)/$(1)-windows/out \
 		-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=$(CURDIR)/$(BIN_DIR)/$(1)/windows \
 		-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$(CURDIR)/$(BIN_DIR)/$(1)/windows \
@@ -111,10 +109,10 @@ define windows_target
 endef
 
 x86_64/windows:
-	$(call windows_target,x86_64,x86_64-w64-mingw32-gcc,x86_64-w64-mingw32-g++)
+	$(call windows_target,x86_64,x86_64-w64-mingw32-gcc)
 
 i686/windows:
-	$(call windows_target,i686,i686-w64-mingw32-gcc,i686-w64-mingw32-g++)
+	$(call windows_target,i686,i686-w64-mingw32-gcc)
 
 ## ── Android ──────────────────────────────────────────────────────────────────
 
