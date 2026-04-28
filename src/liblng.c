@@ -12,6 +12,7 @@
 
 #include "lng.h"
 
+#include <stdio.h>
 #include <ctype.h>
 #include <math.h>
 #include <stdlib.h>
@@ -55,8 +56,8 @@ typedef struct {
     }
 
 static kc_lng_lang_t kc_lng_langs[KC_LNG_MAX_LANGS] = {
-    KC_LNG_LANG("en", "the and are for that with this have from they which would there their about which into through across because between world hello morning everyone project matches short text quick brown fox jumps over lazy dog. how are you doing today? this is a robust test for english language detection. documentation is vital for understanding systems."),
-    KC_LNG_LANG("es", "que el la de en que lo los un una por para como al su sus con del por sobre entre mucho después también siempre mundo hola buenos días todos ¿cómo estás? este proyecto compara texto corto el zorro marrón salta sobre el perro. esperanza y libertad para todos los pueblos. la programación es un arte que requiere paciencia."),
+    KC_LNG_LANG("en", "the and are for that with this have from they which would there their about which into through across because between world hello morning everyone project matches short text quick brown fox jumps over lazy dog. how are you doing today? this is a robust test for english language detection. documentation is vital for understanding systems. university technology science information research development program software computer system network data business management education government country people year time way service work life world school high school state city area group problem hand part child eye woman place case week company system line question work night world. i love coding in c and python."),
+    KC_LNG_LANG("es", "que el la de en que lo los un una por para como al su sus con del por sobre entre mucho después también siempre mundo hola buenos días todos ¿cómo estás? este proyecto compara texto corto el zorro marrón salta sobre el perro. esperanza y libertad para todos los pueblos. la programación es un arte que requiere paciencia. el lenguaje de programación c es muy potente. españa méxico argentina colombia chile perú venezuela ecuador guatemala cuba bolivia república dominicana honduras paraguay el salvador nicaragua costa rica puerto rico panamá uruguay. me gusta mucho viajar y conocer gente nueva. vive habita animal perro gato caballo vaca cerdo oveja pájaro pez. la naturaleza es hermosa."),
     KC_LNG_LANG("pt", "que o a do da de em um uma para com por mais se os as ao das dos pelo pela seu sua como entre muito depois mundo olá bom dia amigos todos este projeto compara texto corto rápido raposa marrom salta sobre cão. a língua portuguesa é maravilhosa. como você está hoje? espero que tudo esteja bem com você e sua família."),
     KC_LNG_LANG("fr", "le la les de des un une et est dans que qui pour pas plus ce sur avec au par se sont nous vous son sa ses monde bonjour tous ce projet compare texte court le renard brun saute par dessus chien paresseux. comment allez-vous? la france est un pays magnifique. la liberté est un droit fondamental pour chaque être humain."),
     KC_LNG_LANG("it", "il la lo i le gli un una e di che in per con si sono ma come nel della delle questo quello non piu mondo ciao buongiorno a tutti questo progetto confronta testi brevi. l'italia è un paese stupendo. spero che questa giornata sia fantastica per te. la pasta e la pizza sono famose in tutto il mondo."),
@@ -359,12 +360,14 @@ static double kc_lng_score(const char *text, const kc_lng_lang_t *lang) {
 
     free(normalized);
 
-    if (total_grams == 0 || ((double)matches / (double)total_grams) < 0.05) {
+    if (total_grams == 0 || ((double)matches / (double)total_grams) < 0.01) {
         return 0.0;
     }
 
+    double avg_log_prob = log_sum / (double)total_grams;
+
     return 1.0 / (
-        1.0 + exp(-8.0 * ((log_sum / (double)total_grams) - (-5.25)))
+        1.0 + exp(-4.0 * (avg_log_prob - (-7.0)))
     );
 }
 
