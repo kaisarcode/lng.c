@@ -23,7 +23,11 @@ set_target_properties(lng_shared PROPERTIES OUTPUT_NAME lng PREFIX "lib")
 target_include_directories(lng_shared PRIVATE src)
 
 add_library(lng_static STATIC ${LNG_SOURCES})
-set_target_properties(lng_static PROPERTIES OUTPUT_NAME lng PREFIX "lib")
+set_target_properties(lng_static PROPERTIES
+    OUTPUT_NAME lng
+    PREFIX "lib"
+    POSITION_INDEPENDENT_CODE ON
+)
 target_include_directories(lng_static PRIVATE src)
 
 add_executable(lng_exe src/lng.c ${LNG_SOURCES})
