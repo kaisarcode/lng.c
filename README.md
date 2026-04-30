@@ -1,38 +1,87 @@
-# lng — Language Detector
+# lng.c - Language Detection Library
 
-`lng` is a minimalist language detector based on UTF-8 n-gram profiles. It identifies languages by comparing the n-gram frequency distribution of input text against pre-computed profiles for 26 supported languages.
+`lng.c` is a minimalist C library and CLI for detecting the language of the given text using internal language profiles. It is designed as a composable native primitive for the KaisarCode ecosystem.
 
 ---
 
-## File Layout
+## CLI
+
+Detect the language of text provided as an argument or via standard input.
+
+### Examples
+
+Single language detection:
+
+```bash
+./bin/x86_64/linux/lng "Hello world"
+```
+
+Ranked detection with threshold and limit:
+
+```bash
+./bin/x86_64/linux/lng -l 3 -t 0.1 "Hello world"
+```
+
+Standard input processing:
+
+```bash
+printf 'hola mundo' | ./bin/x86_64/linux/lng
+```
+
+---
+
+### Parameters
+
+| Flag | Description |
+| :--- | :--- |
+| `-t`, `--threshold <n>` | Minimum score threshold |
+| `-l`, `--limit <n>` | Maximum number of results |
+| `-h`, `--help` | Show help and usage |
+| `-v`, `--version` | Show version |
+
+---
+
+### Output
+
+Results are printed as the language code (for single match) or code and score (for ranked results):
 
 ```
-lng.c/
-├── src/
-│   ├── lng.c          CLI entry point (main)
-│   ├── liblng.c       Core library implementation
-│   └── lng.h          Public API header
-├── bin/               Compiled artifacts (committed, Git LFS)
-│   ├── x86_64/{linux,windows}
-│   ├── i686/{linux,windows}
-│   ├── aarch64/{linux,android}
-│   ├── armv7/{linux,android}
-│   ├── armv7hf/linux
-│   ├── riscv64/linux
-│   ├── powerpc64le/linux
-│   ├── mips/linux  mipsel/linux  mips64el/linux
-│   ├── s390x/linux
-│   └── loongarch64/linux
-├── CMakeLists.txt
-├── Makefile
-├── test.sh
-└── README.md
+en
 ```
+
+```
+en: 0.9500
+es: 0.0400
+```
+
+---
+
+## Public API
+
+```c
+#include "lng.h"
+
+kc_lng_init();
+
+const char *code = kc_lng_detect("Hello world");
+
+kc_lng_result_t results[3];
+int count = kc_lng_detect_top("Hello world", results, 3, 0.1);
+```
+
+---
+
+## Lifecycle
+
+- `kc_lng_init()` - initializes internal language profiles. This call is idempotent and thread-safe.
+- `kc_lng_detect()` and `kc_lng_detect_top()` - perform language detection. Both call `kc_lng_init()` internally if not yet initialized. Once initialized, all state is read-only and safe for concurrent access.
+
+---
 
 ## Build
 
 ```bash
-make all              # all 16 targets
+make all
 make x86_64/linux
 make x86_64/windows
 make i686/linux
@@ -52,53 +101,10 @@ make loongarch64/linux
 make clean
 ```
 
-Each target produces under `bin/{arch}/{platform}/`:
-- `liblng.a` — static library
-- `liblng.so` / `liblng.dll` / `liblng.dll.a` — shared library and import lib
-- `lng` / `lng.exe` — CLI executable
+Artifacts are generated under:
 
-## CLI
-
-```bash
-./bin/x86_64/linux/lng "This is an English sentence."
-printf 'Este es un texto en español' | ./bin/x86_64/linux/lng -t 0.1
-./bin/x86_64/linux/lng "Bonjour tout le monde" -l 3
 ```
-
-**Options:**
-
-- `--threshold`, `-t <n>`: Minimum score threshold (default: 0.001).
-- `--limit`, `-l <n>`: Maximum number of results to display.
-- `--help`, `-h`: Show help.
-- `--version`, `-v`: Show version.
-
----
-
-## Public API
-
-```c
-#include "lng.h"
-
-kc_lng_init();
-
-const char *lang = kc_lng_detect("Hello world");
-
-kc_lng_result_t results[5];
-int count = kc_lng_detect_top("Some text to detect", results, 5, 0.01);
-```
-
-### Threading
-
-`kc_lng_init()` uses a once-control (`pthread_once` / `InitOnceExecuteOnce`) and is safe to call from multiple threads. After initialization all internal state is read-only, so `kc_lng_detect()` and `kc_lng_detect_top()` are safe for concurrent callers without additional locking. The caller is responsible for not sharing output buffers between threads.
-
----
-
-## Build Options
-
-- `LNG_NATIVE`: Enable `-march=native` (default: `OFF`).
-
-```bash
-cmake -B .build -DLNG_NATIVE=ON
+bin/{arch}/{platform}/
 ```
 
 ---
