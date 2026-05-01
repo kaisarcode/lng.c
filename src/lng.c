@@ -22,25 +22,53 @@
 #define KC_LNG_VERSION    "0.1.0"
 
 /**
- * Reads text from standard input into the provided buffer.
- * @param buffer Destination buffer.
- * @param size Buffer size in bytes.
- * @return Pointer to buffer on success, or NULL on empty input.
+ * Reads text from standard input into a dynamically allocated buffer.
+ * @param out_text Destination pointer for the allocated text.
+ * @return 0 on success, or -1 on failure.
  */
-static const char *kc_lng_read_stdin(char *buffer, size_t size) {
+static int kc_lng_read_stdin(char **out_text) {
+    char *data = NULL;
+    size_t length = 0;
+    size_t capacity = 0;
+    char chunk[4096];
     size_t n;
 
-    if (!buffer || size < 2) {
-        return NULL;
+    if (!out_text) {
+        return -1;
     }
 
-    n = fread(buffer, 1, size - 1, stdin);
-    if (n == 0) {
-        return NULL;
+    while ((n = fread(chunk, 1, sizeof(chunk), stdin)) > 0) {
+        if (length + n + 1 > capacity) {
+            size_t next_cap = capacity ? capacity * 2 : 4096;
+            while (next_cap < length + n + 1) {
+                next_cap *= 2;
+            }
+            char *next_data = (char *)realloc(data, next_cap);
+            if (!next_data) {
+                free(data);
+                return -1;
+            }
+            data = next_data;
+            capacity = next_cap;
+        }
+        memcpy(data + length, chunk, n);
+        length += n;
     }
 
-    buffer[n] = '\0';
-    return buffer;
+    if (ferror(stdin)) {
+        free(data);
+        return -1;
+    }
+
+    if (length == 0) {
+        free(data);
+        *out_text = NULL;
+        return 0;
+    }
+
+    data[length] = '\0';
+    *out_text = data;
+    return 0;
 }
 
 /**
@@ -140,15 +168,16 @@ static int kc_lng_fail_usage(const char *message) {
  * @return Process exit status.
  */
 int main(int argc, char **argv) {
-    char buffer[KC_LNG_TEXT_CAP];
     kc_lng_result_t results[KC_LNG_RESULT_CAP];
     const char *text;
+    char *stdin_text;
     double threshold;
     int limit;
     int i;
     int written;
 
     text = NULL;
+    stdin_text = NULL;
     threshold = 0.001;
     limit = 1;
 
@@ -201,10 +230,14 @@ int main(int argc, char **argv) {
     }
 
     if (!text) {
-        text = kc_lng_read_stdin(buffer, sizeof(buffer));
+        if (kc_lng_read_stdin(&stdin_text) != 0) {
+            return 1;
+        }
+        text = stdin_text;
     }
 
     if (!text || !*text) {
+        free(stdin_text);
         return 0;
     }
 
@@ -218,6 +251,7 @@ int main(int argc, char **argv) {
 
     if (kc_lng_init() != KC_LNG_OK) {
         fprintf(stderr, "Error: initialization failed.\n");
+        free(stdin_text);
         return 1;
     }
 
@@ -231,5 +265,6 @@ int main(int argc, char **argv) {
         }
     }
 
+    free(stdin_text);
     return 0;
 }
