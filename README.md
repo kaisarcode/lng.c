@@ -81,6 +81,7 @@ int count = kc_lng_detect_top("Hello world", results, 3, 0.1);
 ## Build
 
 ```bash
+make
 make all
 make x86_64/linux
 make x86_64/windows
