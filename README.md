@@ -19,7 +19,7 @@ Single language detection:
 Ranked detection with threshold and limit:
 
 ```bash
-./bin/x86_64/linux/lng -l 3 -t 0.1 "Hello world"
+./bin/x86_64/linux/lng "Hello world" -l 3 -t 0.1
 ```
 
 Standard input processing:
